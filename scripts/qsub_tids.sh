@@ -45,8 +45,8 @@ echo VALoutpath   : $VALoutpath
 cd /lustre/haven/proj/UTK0105/Python_runs
 mkdir ./$PBS_JOBID
 cd ./$PBS_JOBID
-git clone -b master https://github.com/dtalmy/growth_curves
-cd ./growth_curves/src 
+git clone -b master https://github.com/dtalmy/algvir
+cd ./algvir/src 
 #
 #run model
 VALpdfname="tids_"$VALtids
