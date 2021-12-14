@@ -546,7 +546,7 @@ def fit_all_dir(df,DIRpdf='../figures/'):
     bestmod = [a for a in aics if aics[a] == minaic][0]
     bestposteriors = posteriors[bestmod]
     bestposteriors['bestmodel'] = bestmod
-    pd.concat(posteriors).to_csv('../data/output/posteriors/separate/'+uid+'.csv')
+    pd.concat(posteriors).to_csv('../data/output/posteriors/individual/'+uid+'.csv')
     f1,ax1 = plot_infection_dynamics(models)
     f2,ax2 = plot_posteriors(posteriors)
     f3,ax3 = plot_stats(stats)
