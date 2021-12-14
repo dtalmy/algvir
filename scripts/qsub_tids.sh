@@ -45,7 +45,7 @@ echo VALoutpath   : $VALoutpath
 cd /lustre/haven/proj/UTK0105/Python_runs
 mkdir ./$PBS_JOBID
 cd ./$PBS_JOBID
-git clone -b master https://github.com/dtalmy/algvir.git
+git clone -b main https://github.com/dtalmy/algvir.git
 cd ./algvir/src 
 #
 #run model
