@@ -502,7 +502,7 @@ def enc_swim(rprey,rpred,rdetectfac=3.0,upreyswim=True,ufac=1.0,Dpreydiff=True):
         upred = calc_swim(rpred,ufac)
 
 def print_params_to_csv(model,uid):
-    fname = '../data/params/final/'+uid + '_' + model.get_model().__name__ + '_params.csv'
+    fname = '../data/input/parameter_guesses/'+uid + '_' + model.get_model().__name__ + '_params.csv'
     pframe = pd.DataFrame(model.get_parameters(),columns=model.get_pnames())
     pframe['id'] = uid
     pframe = pframe.set_index('id')
@@ -510,7 +510,7 @@ def print_params_to_csv(model,uid):
     pframe.to_csv(fname)
 
 def get_params_from_csv(model,uid):
-    fname = '../data/params/initial/'+uid + '_' + model.get_model().__name__ + '_params.csv'
+    fname = '../data/input/parameter_guesses/'+uid + '_' + model.get_model().__name__ + '_params.csv'
     pframe = pd.read_csv(fname,index_col='id')
     #if 'lam' in pframe.columns:
     #    pframe = pframe.rename(columns={'lam':'tau'})
@@ -546,7 +546,7 @@ def fit_all_dir(df,DIRpdf='../figures/'):
     bestmod = [a for a in aics if aics[a] == minaic][0]
     bestposteriors = posteriors[bestmod]
     bestposteriors['bestmodel'] = bestmod
-    pd.concat(posteriors).to_csv('../data/output/'+uid+'.csv')
+    pd.concat(posteriors).to_csv('../data/output/posteriors/separate/'+uid+'.csv')
     f1,ax1 = plot_infection_dynamics(models)
     f2,ax2 = plot_posteriors(posteriors)
     f3,ax3 = plot_stats(stats)
