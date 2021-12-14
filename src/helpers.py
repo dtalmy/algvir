@@ -502,7 +502,7 @@ def enc_swim(rprey,rpred,rdetectfac=3.0,upreyswim=True,ufac=1.0,Dpreydiff=True):
         upred = calc_swim(rpred,ufac)
 
 def print_params_to_csv(model,uid):
-    fname = '../data/input/parameter_guesses/'+uid + '_' + model.get_model().__name__ + '_params.csv'
+    fname = '../data/output/medians/'+uid + '_' + model.get_model().__name__ + '_params.csv'
     pframe = pd.DataFrame(model.get_parameters(),columns=model.get_pnames())
     pframe['id'] = uid
     pframe = pframe.set_index('id')
