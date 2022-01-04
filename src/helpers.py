@@ -30,6 +30,7 @@ def get_master_dataframe():
         df.loc[df.organism == 'V', 'time'] = df.loc[df.organism == 'V', 'time'].copy() -\
                 min(df.loc[df.organism == 'V', 'time']) # same for virus
         main_df_corrected = pd.concat((main_df_corrected,df))
+    main_df_corrected.time = main_df_corrected.time/24.0
     return main_df_corrected
 
 def load_priors(df):
@@ -229,9 +230,11 @@ def plot_posterior_hists(model,posterior):
     f,ax = py.subplots(nps,1,figsize=[5,nps*4])
     for (a,l) in zip(ax,pnames):
         a.set_xlabel(l)
+        a.set_ylabel('frequency')
         for cn in posterior['chain#'].unique():
             ps = posterior[posterior['chain#']==cn]
-            a.hist(ps[l],bins=20,alpha=0.5)
+            a.hist(ps[l],bins=20,alpha=0.5,label='chain #='+str(cn))
+        l = a.legend()
     f.suptitle(model.get_model().__name__)
     f.subplots_adjust(hspace=0.4)
     return(f,ax)
@@ -247,13 +250,14 @@ def plot_posterior_facet(model,posteriors):
             else:
                 for cn in posteriors['chain#'].unique():
                     ps = posteriors[posteriors['chain#']==cn]
-                    ax[i,j].scatter(ps[nx],ps[ny],rasterized=True,alpha=0.5)
+                    ax[i,j].scatter(ps[nx],ps[ny],rasterized=True,alpha=0.5,label='chain #='+str(cn))
                     ax[i,j].set_xlabel(nx)
                     ax[i,j].set_ylabel(ny)
                     ax[i,j].semilogx()
                     ax[i,j].semilogy()
+                l = ax[i,j].legend()
     f.suptitle(model.get_model().__name__)
-    f.subplots_adjust(hspace=0.3,wspace=0.3)
+    f.subplots_adjust(hspace=0.4,wspace=0.4)
     return(f,ax)
 
 # plot chi hists
@@ -261,8 +265,9 @@ def plot_chi_hists(model,posteriors,chain_sep=True):
     f,ax = py.subplots()
     for cn in posteriors['chain#'].unique():
         chis = posteriors[posteriors['chain#']==cn].chi
-        ax.hist(chis,alpha=0.5)
-    ax.set_xlabel('chi')
+        ax.hist(chis,alpha=0.5,label='chain #='+str(cn))
+    ax.legend()
+    ax.set_xlabel(r'$\chi^2$')
     ax.set_ylabel('frequency')
     f.suptitle(model.get_model().__name__)
     return(f,ax)
@@ -271,9 +276,10 @@ def plot_chi_trace(model,posteriors):
     f,ax = py.subplots()
     for cn in posteriors['chain#'].unique():
         chis = posteriors[posteriors['chain#']==cn].chi
-        py.plot(range(chis.shape[0]),chis,rasterized=True)
+        py.plot(range(chis.shape[0]),chis,rasterized=True,label='chain #='+str(cn))
+    ax.legend()
     ax.set_xlabel('iteration')
-    ax.set_ylabel('chi')
+    ax.set_ylabel(r'$\chi^2$')
     f.suptitle(model.get_model().__name__)
     return(f,ax)
 
@@ -286,7 +292,7 @@ def get_posteriors(model,chain_inits=2):
 # takes a dictionary of model objects and plots them
 def plot_infection_dynamics(models):
     f,axs = py.subplots(1,2,figsize=[9,4.5])
-    for model in models:
+    for (model,n) in zip(models,range(len(models.keys()))):
         states = models[model].get_snames(predict_obs=True)
         states.sort()
         mod = models[model].integrate()
@@ -301,7 +307,7 @@ def plot_infection_dynamics(models):
             ax.set_ylabel(state+' ml$^{-1}$')
             ax.semilogy()
             if state in mod:
-                ax.plot(models[model].times,mod[state],label=model)
+                ax.plot(models[model].times,mod[state],label='n='+str(n))
     l = axs[0].legend()
     l.draw_frame(False)
     return f,ax
@@ -445,13 +451,13 @@ def vir_carb(rpred): # Jover et al., 2014
         Cvir = Chead / avagadro * 1000.0 * 1e+12 # fmol C per virus
         return Cvir
 
-def graz_carb(rpred):
-        a = 10 ** -0.547
-        b = 0.9
-        Vs = 4.0/3.0*np.pi*rpred**3.0 # volume in micron**3
-        Cgraz = a * Vs ** b # pg C per individual
-        Cgraz = Cgraz * 1e-9 /12.0 * 1e+12 # fmol C per individual
-        return Cgraz
+def host_carb(rprey):
+        a = 10 ** -0.583
+        b = 0.86
+        Vs = 4.0/3.0*np.pi*rprey**3.0 # volume in micron**3
+        Chost = a * Vs ** b # pg C per individual
+        Chost = Chost * 1e-9 /12.0 * 1e+12 # fmol C per individual
+        return Chost
 
 def calc_diff(r,T=283.15):
         K = 1.38e-16 # g cm2 s-2 degrees Kelvin-1 - stefan bolzman constant
